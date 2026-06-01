@@ -1,0 +1,488 @@
+{
+  "game": {
+    "title": "Blacksite Breach",
+    "camera": "hybrid",
+    "source": "cs_shoot_canvas",
+    "waves": [
+      {
+        "id": 1,
+        "count": 8,
+        "enemyAsset": "enemy_douglas_rifle",
+        "spawnRadius": 180,
+        "minEnemyDistance": 18,
+        "minPlayerDistance": 26,
+        "rangedRatio": 0.25
+      },
+      {
+        "id": 2,
+        "count": 12,
+        "enemyAsset": "enemy_douglas_rifle",
+        "spawnRadius": 210,
+        "minEnemyDistance": 16,
+        "minPlayerDistance": 28,
+        "healthMultiplier": 1.1,
+        "moveSpeedMultiplier": 1.05,
+        "rangedRatio": 0.38
+      },
+      {
+        "id": 3,
+        "count": 1,
+        "enemyAsset": "enemy_douglas_rifle",
+        "spawnRadius": 220,
+        "minEnemyDistance": 20,
+        "minPlayerDistance": 36,
+        "scaleMultiplier": 2,
+        "healthMultiplier": 2.4,
+        "moveSpeedMultiplier": 0.9,
+        "isBoss": true,
+        "rangedRatio": 1
+      }
+    ]
+  },
+  "assets": [
+    {
+      "id": "world_fps_map",
+      "role": "map",
+      "url": "https://static.seeles.ai/games-sdk/fps/single-fps-person.glb",
+      "format": "glb",
+      "targetSize": 240,
+      "runtimeName": "world_map",
+      "source": "user_provided",
+      "sourceContract": {
+        "replacesAssetId": "world_fps_map",
+        "replacesRole": "map",
+        "runtimeModule": "World",
+        "runtimeBinding": "Game.getPrimaryAsset('map') -> new World(scene, mapAsset)",
+        "preservedCapabilities": [
+          "map loading",
+          "ground alignment",
+          "recursive mesh collision",
+          "fallback ground",
+          "wave spawn raycasts"
+        ],
+        "adaptation": {
+          "targetSize": 240,
+          "runtimeName": "world_map",
+          "collision": "alias collision roots with recursive mesh fallback",
+          "normalization": "largest horizontal dimension scaled to targetSize, centered on X/Z, bottom aligned to y=0"
+        },
+        "fallback": "fallback_ground",
+        "origin": "user_provided"
+      },
+      "collisionAliases": [
+        "world_map",
+        "terrain",
+        "ground",
+        "collision",
+        "collider"
+      ],
+      "fallback": "fallback_ground",
+      "fallbacks": {
+        "missingCollisionMesh": "recursive_mesh_collision",
+        "loadFailure": "create_plane_ground"
+      },
+      "inspectionAssumptions": "Validated with scripts/inspect_model.bundle.mjs against the remote GLB. The model has 3423 nodes, 3370 meshes, 56 materials, no animations or skinned meshes, and original bounds around 381.0 x 33.3 x 450.0 units; runtime normalization keeps broad FPS navigation while recursive mesh collision remains the fallback."
+    },
+    {
+      "id": "enemy_douglas_rifle",
+      "role": "enemy",
+      "url": "https://static.seeles.ai/games-sdk/multiplayer/Douglas.fbx",
+      "format": "fbx",
+      "expectedHeight": 2.2,
+      "runtimeName": "enemy_base_wrapper",
+      "cloneStrategy": "skeleton",
+      "source": "user_provided",
+      "sourceContract": {
+        "replacesAssetId": "enemy_futuristic_soldier",
+        "replacesRole": "enemy",
+        "runtimeModule": "EnemyManager",
+        "runtimeBinding": "Game.getPrimaryAsset('enemy') -> new EnemyManager(scene, player, enemyAsset)",
+        "preservedCapabilities": [
+          "clone base model",
+          "spawn waves",
+          "AI movement",
+          "ranged attack",
+          "hit detection",
+          "death cleanup"
+        ],
+        "adaptation": {
+          "format": "fbx",
+          "expectedHeight": 2.2,
+          "cloneStrategy": "skeleton",
+          "externalAnimationSources": true,
+          "attachedWeapon": "enemy_rifle_gun1",
+          "weaponPlacement": "scene-level gun follows Mixamo right/left hand bones each frame"
+        },
+        "fallback": "cylinder_enemy",
+        "origin": "user_provided"
+      },
+      "modelRotation": [
+        0,
+        0,
+        0
+      ],
+      "animationAliases": {
+        "idle": [
+          "idle"
+        ],
+        "walk": [
+          "walk",
+          "run",
+          "move"
+        ],
+        "attack": [
+          "attack",
+          "shoot",
+          "fire"
+        ],
+        "jump": [
+          "jump"
+        ],
+        "hit": [
+          "hit",
+          "damage"
+        ],
+        "death": [
+          "death",
+          "die",
+          "dead"
+        ]
+      },
+      "animationSources": {
+        "idle": {
+          "url": "https://static.seeles.ai/games-sdk/multiplayer/animations/Rifle-Aiming-Idle.fbx",
+          "format": "fbx"
+        },
+        "run": {
+          "url": "https://static.seeles.ai/games-sdk/multiplayer/animations/Rifle-Run.fbx",
+          "format": "fbx",
+          "targetState": "walk"
+        },
+        "jump": {
+          "url": "https://static.seeles.ai/games-sdk/multiplayer/animations/Rifle-Jump.fbx",
+          "format": "fbx",
+          "targetState": "jump"
+        },
+        "fire": {
+          "url": "https://static.seeles.ai/games-sdk/multiplayer/animations/Rifle-Firing.fbx",
+          "format": "fbx",
+          "targetState": "attack"
+        },
+        "death": {
+          "url": "https://static.seeles.ai/games-sdk/multiplayer/animations/Rifile-Dying.fbx",
+          "format": "fbx"
+        }
+      },
+      "weapon": {
+        "id": "enemy_rifle_gun1",
+        "url": "https://static.seeles.ai/games-sdk/multiplayer/gun1.glb",
+        "format": "glb",
+        "targetLength": 0.82,
+        "handBlend": 0.34,
+        "forwardOffset": 0.22,
+        "upOffset": 0.03,
+        "rightHandAliases": [
+          "righthand",
+          "rightwrist",
+          "handr",
+          "rhand",
+          "mixamorigRightHand"
+        ],
+        "leftHandAliases": [
+          "lefthand",
+          "leftwrist",
+          "handl",
+          "lhand",
+          "mixamorigLeftHand"
+        ],
+        "placement": "Scene-level gun is centered between right and left hand bones, then nudged forward/up along enemy aim direction."
+      },
+      "hitZones": {
+        "head": [
+          "head",
+          "helmet",
+          "neck",
+          "skull"
+        ]
+      },
+      "fallback": "cylinder_enemy",
+      "fallbacks": {
+        "headshotByHeightRatio": 0.78,
+        "missingDeathAnimation": "remove_after_delay"
+      },
+      "inspectionAssumptions": "Douglas.fbx parsed with a Node browser-global shim because the FBX contains embedded texture references. The model is a Mixamo skeleton with 6 skinned meshes, 112 bones, right-hand bone mixamorigRightHand, and original height about 184.31 units. External Rifle-* FBX clips each contain one Mixamo animation clip named mixamo.com, so runtime binding renames clips by animationSources keys."
+    },
+    {
+      "id": "weapon_ak",
+      "role": "weapon",
+      "displayName": "AK Assault Rifle",
+      "url": "https://static.seeles.ai/games-sdk/fps/buqiang.glb",
+      "format": "glb",
+      "source": "user_provided",
+      "sourceContract": {
+        "replacesAssetId": "weapon_ak",
+        "replacesRole": "weapon",
+        "runtimeModule": "Player",
+        "runtimeBinding": "Game.getAssetsByRole('weapon') -> new Player(camera, scene, ui, { weapons })",
+        "preservedCapabilities": [
+          "FPS camera placement",
+          "ADS placement",
+          "weapon switching",
+          "ammo and damage tuning",
+          "camera-forward shooting",
+          "muzzle flash fallback",
+          "reload fallback"
+        ],
+        "adaptation": {
+          "format": "glb",
+          "targetViewLength": 0.7,
+          "modelScale": 1,
+          "rotation": [
+            0,
+            3.14159,
+            0
+          ],
+          "muzzleOffset": [
+            0,
+            0,
+            97.2
+          ],
+          "scaling": "player.js scales the model's largest bounding-box dimension to targetViewLength, then applies modelScale"
+        },
+        "fallback": "skip_failed_weapon_model",
+        "origin": "user_provided"
+      },
+      "viewOffset": [
+        0.25,
+        -0.2,
+        -0.23
+      ],
+      "adsOffset": [
+        0.04,
+        -0.13,
+        -0.17
+      ],
+      "rotation": [
+        0,
+        3.14159,
+        0
+      ],
+      "modelScale": 1,
+      "targetViewLength": 0.7,
+      "muzzleOffset": [
+        0,
+        0,
+        97.2
+      ],
+      "muzzleSocketAliases": [
+        "muzzle",
+        "barrel",
+        "gun_tip",
+        "firepoint"
+      ],
+      "animationAliases": {
+        "fire": [
+          "shoot",
+          "fire"
+        ],
+        "reload": [
+          "reload"
+        ]
+      },
+      "ammo": 30,
+      "magazineSize": 30,
+      "reserveAmmo": 90,
+      "fireRateMs": 100,
+      "damage": 34,
+      "inspectionAssumptions": "buqiang.glb parsed as a GLB with 74 nodes, 7 meshes, 1 skinned mesh, 50 bones, 2 materials, and one generic 8.07s clip named allanims. Original bounds are about 49.3 x 39.6 x 156.3 units, so the Player loader scales the largest dimension to targetViewLength 0.70. No named muzzle socket was found; the fallback muzzle uses local +Z near the inspected barrel end."
+    },
+    {
+      "id": "weapon_handgun",
+      "role": "weapon",
+      "displayName": "Tactical Handgun",
+      "url": "https://static.seeles.ai/games-sdk/fps/shouqiang.glb",
+      "format": "glb",
+      "source": "user_provided",
+      "sourceContract": {
+        "replacesAssetId": "weapon_handgun",
+        "replacesRole": "weapon",
+        "runtimeModule": "Player",
+        "runtimeBinding": "Game.getAssetsByRole('weapon') -> new Player(camera, scene, ui, { weapons })",
+        "preservedCapabilities": [
+          "FPS camera placement",
+          "ADS placement",
+          "weapon switching",
+          "ammo and damage tuning",
+          "camera-forward shooting",
+          "muzzle flash fallback",
+          "reload fallback"
+        ],
+        "adaptation": {
+          "format": "glb",
+          "targetViewLength": 0.42,
+          "modelScale": 1,
+          "rotation": [
+            0,
+            3.14159,
+            0
+          ],
+          "muzzleOffset": [
+            0,
+            0,
+            0.37
+          ],
+          "scaling": "player.js scales the model's largest bounding-box dimension to targetViewLength, then applies modelScale"
+        },
+        "fallback": "skip_failed_weapon_model",
+        "origin": "user_provided"
+      },
+      "viewOffset": [
+        0.25,
+        -0.2,
+        -0.23
+      ],
+      "adsOffset": [
+        0.025,
+        -0.12,
+        -0.16
+      ],
+      "rotation": [
+        0,
+        3.14159,
+        0
+      ],
+      "modelScale": 1,
+      "targetViewLength": 0.42,
+      "muzzleOffset": [
+        0,
+        0,
+        0.37
+      ],
+      "muzzleSocketAliases": [
+        "muzzle",
+        "barrel",
+        "gun_tip",
+        "firepoint"
+      ],
+      "animationAliases": {
+        "fire": [
+          "shoot",
+          "fire"
+        ],
+        "reload": [
+          "reload"
+        ]
+      },
+      "ammo": 12,
+      "magazineSize": 12,
+      "reserveAmmo": 48,
+      "fireRateMs": 300,
+      "damage": 45,
+      "inspectionAssumptions": "shouqiang.glb parsed as a GLB with 86 nodes, 13 meshes, 1 skinned mesh, 51 bones, 2 materials, and one generic 8.8s clip named allanimations. Original bounds are about 0.42 x 0.34 x 0.84 units, so the Player loader scales the largest dimension to targetViewLength 0.42. No named muzzle socket was found; the fallback muzzle uses local +Z near the inspected barrel end."
+    },
+    {
+      "id": "weapon_sniper",
+      "role": "weapon",
+      "displayName": "Precision Sniper",
+      "url": "https://static.seeles.ai/games-sdk/fps/jujiqiang.glb",
+      "format": "glb",
+      "source": "user_provided",
+      "sourceContract": {
+        "replacesAssetId": "weapon_sniper",
+        "replacesRole": "weapon",
+        "runtimeModule": "Player",
+        "runtimeBinding": "Game.getAssetsByRole('weapon') -> new Player(camera, scene, ui, { weapons })",
+        "preservedCapabilities": [
+          "FPS camera placement",
+          "ADS placement",
+          "weapon switching",
+          "ammo and damage tuning",
+          "camera-forward shooting",
+          "muzzle flash fallback",
+          "reload fallback"
+        ],
+        "adaptation": {
+          "format": "glb",
+          "targetViewLength": 0.78,
+          "modelScale": 1,
+          "rotation": [
+            0,
+            3.14159,
+            0
+          ],
+          "muzzleOffset": [
+            0,
+            0,
+            102.6
+          ],
+          "scaling": "player.js scales the model's largest bounding-box dimension to targetViewLength, then applies modelScale"
+        },
+        "fallback": "skip_failed_weapon_model",
+        "origin": "user_provided"
+      },
+      "viewOffset": [
+        0.25,
+        -0.2,
+        -0.23
+      ],
+      "adsOffset": [
+        0.012,
+        -0.1,
+        -0.135
+      ],
+      "rotation": [
+        0,
+        3.14159,
+        0
+      ],
+      "modelScale": 1,
+      "targetViewLength": 0.78,
+      "muzzleOffset": [
+        0,
+        0,
+        102.6
+      ],
+      "muzzleSocketAliases": [
+        "muzzle",
+        "barrel",
+        "gun_tip",
+        "firepoint"
+      ],
+      "animationAliases": {
+        "fire": [
+          "shoot",
+          "fire"
+        ],
+        "reload": [
+          "reload"
+        ]
+      },
+      "ammo": 5,
+      "magazineSize": 5,
+      "reserveAmmo": 15,
+      "fireRateMs": 1000,
+      "damage": 120,
+      "inspectionAssumptions": "jujiqiang.glb parsed as a GLB with 83 nodes, 12 meshes, 1 skinned mesh, 50 bones, 4 materials, and one generic 6.5s clip named allanims. Original bounds are about 42.3 x 41.2 x 174.5 units, so the Player loader scales the largest dimension to targetViewLength 0.78. No named muzzle socket was found; the fallback muzzle uses local +Z near the inspected barrel end."
+    },
+    {
+      "id": "fx_muzzle_flash",
+      "role": "texture",
+      "url": "https://static.seeles.ai/media/game_asset/assets_89248454_4e57_4998_8c15_492b7f5638e0_1773284510025949355.png"
+    },
+    {
+      "id": "fx_smoke",
+      "role": "texture",
+      "url": "https://static.seeles.ai/media/game_asset/assets_31ff84ab_9b41_4345_b3f2_ae1e2a26041d_1773284494314685071.png"
+    },
+    {
+      "id": "sfx_shoot",
+      "role": "sound",
+      "url": "https://static.seeles.ai/data/asset/export/6f1cba03-7e72-4eeb-9644-e426432f0de5/174010/sfx_3f590c43-42c4-4c78-814e-a55a4d3d42b0.mp3"
+    },
+    {
+      "id": "sfx_hit_confirm",
+      "role": "sound",
+      "url": "https://static.seeles.ai/data/asset/export/c1f28fc5-e549-4133-83e8-e49e17aa55ab/174079/sfx_3db919e7-e64f-4b9d-930e-9e8165adcf58.mp3"
+    }
+  ]
+}
