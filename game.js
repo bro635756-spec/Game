@@ -1,9 +1,9 @@
 import * as THREE from 'three';
-import { World } from './world.js';
-import { Player } from './player.js';
-import { Controls } from './controls.js';
-import { UI } from './ui.js';
-import { EnemyManager } from './enemy.js';
+import { World } from 'world.js';
+import { Player } from 'player.js';
+import { Controls } from 'controls.js';
+import { UI } from 'ui.js';
+import { EnemyManager } from 'enemy.js';
 
 class Game {
     constructor() {
